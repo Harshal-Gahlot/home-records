@@ -16,22 +16,18 @@ export function Header() {
                 Home Records
             </div>
             <div>
-                <Show>
-                    <Show.IfLoaded>
-                        <Show.IfSignedIn>
-                            <OrganizationSwitcher
-                                hidePersonal
-                                afterSelectOrganizationUrl="/"
-                                afterCreateOrganizationUrl="/"
-                            / >
-                            <UserButton />
-                        </Show.IfSignedIn>
-                        <Show.IfSignedOut>
-                            <SignInButton mode="modal">
-                                <button className="px-3 py-1.5 text-sm bg-neutral-900 text-neutral-50 rounded-md hover:bg-neutral-800 transition-colors">Sign In</button>
-                            </SignInButton>
-                        </Show.IfSignedOut>
-                    </Show.IfLoaded>
+                <Show when="signed-in">
+                    <OrganizationSwitcher
+                        hidePersonal
+                        afterSelectOrganizationUrl="/"
+                        afterCreateOrganizationUrl="/"
+                    / >
+                    <UserButton />
+                </Show>
+                <Show when="signed-out">
+                    <SignInButton mode="modal">
+                        <button className="px-3 py-1.5 text-sm bg-neutral-900 text-neutral-50 rounded-md hover:bg-neutral-800 transition-colors">Sign In</button>
+                    </SignInButton>
                 </Show>
             </div> 
         </header>
