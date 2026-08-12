@@ -1,69 +1,86 @@
-import Image from "next/image";
+import {
+  getPantryItems,
+  addPantryItem,
+  toggleItemStock,
+  removePantryItem,
+} from "@/actions/pantry";
 
-export default function Home() {
+export default async function Home() {
+  // 1. Test Fetching items from DB
+  const items = await getPantryItems();
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <div className="max-w-md mx-auto py-8 space-y-6">
+      <h1 className="text-xl font-bold">Actions Test Page</h1>
+
+      {/* 2. Test Inserting an item */}
+      <form action={addPantryItem} className="flex gap-2">
+        <input
+          type="text"
+          name="name"
+          placeholder="New item (e.g., Eggs)"
+          required
+          className="border px-3 py-1.5 rounded flex-1 text-sm"
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+        <button
+          type="submit"
+          className="bg-black text-white px-3 py-1.5 rounded text-sm font-medium"
+        >
+          Add Item
+        </button>
+      </form>
+
+      {/* 3. Render items and test Toggle & Delete */}
+      <div className="space-y-2">
+        {items.length === 0 && (
+          <p className="text-sm text-neutral-500">
+            No items yet (or no household selected in Header).
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+        )}
+
+        {items.map((item) => (
+          <div
+            key={item.id}
+            className="flex items-center justify-between border p-3 rounded text-sm"
           >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+            <span className={item.inStock ? "" : "line-through text-neutral-400"}>
+              {item.name}
+            </span>
+
+            <div className="flex gap-2">
+              {/* Test Stock Toggle */}
+              <form
+                action={async () => {
+                  "use server";
+                  await toggleItemStock(item.id, !item.inStock);
+                }}
+              >
+                <button
+                  type="submit"
+                  className="px-2 py-1 text-xs border rounded bg-neutral-100 hover:bg-neutral-200"
+                >
+                  {item.inStock ? "Mark Out" : "Mark In"}
+                </button>
+              </form>
+
+              {/* Test Deletion */}
+              <form
+                action={async () => {
+                  "use server";
+                  await removePantryItem(item.id);
+                }}
+              >
+                <button
+                  type="submit"
+                  className="px-2 py-1 text-xs text-white bg-red-600 rounded hover:bg-red-700"
+                >
+                  Delete
+                </button>
+              </form>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
