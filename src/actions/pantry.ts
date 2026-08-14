@@ -9,7 +9,6 @@ import {pantryItems} from "@/db/schema"
 // GET: fetch all pantry items of user's household
 export async function getPantryItems() {
     const {orgId} = await auth();
-    // const {orgId} = await auth();
     if (!orgId) return []; // if user not in any household
 
     return await db
@@ -55,7 +54,7 @@ export async function toggleItemStock(id: string, inStock: boolean) {
                 eq(pantryItems.householdId, orgId)
             )
         )
-    revalidatePath("/");
+    // revalidatePath("/");
 }
 
 // DELETE: remove an item from the pantry

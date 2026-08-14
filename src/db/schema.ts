@@ -9,7 +9,7 @@ export const households = pgTable("households", {
 export const pantryItems = pgTable("pantry_items", {
     id: text("id").primaryKey(),
     householdId: text("household_id").notNull().references(
-        () => households.id, { onDelete: "cascade" }),
+        () => households.id, { onDelete: "cascade" }), // fkey
     name: text("name").notNull(),
     inStock: boolean("in_stock").default(true).notNull(),
     lastUpdatedBy: text("last_updated_by"),
